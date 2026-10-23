@@ -1,25 +1,26 @@
 # Periodic Table Database
 
-A command-line periodic table lookup project built with **Bash and PostgreSQL** as part of the freeCodeCamp Relational Database curriculum.
+A Bash and PostgreSQL project completed as part of freeCodeCamp's **Relational Databases Certification**, under the *Build a Periodic Table Database* challenge.
 
-The project stores chemical element information in a relational database and retrieves an element's properties using its atomic number, chemical symbol, or name.
+The project uses a relational database to store chemical element information and a Bash script to retrieve and display details about an element based on its atomic number, symbol, or name.
 
 ## Features
 
-- Search for an element by atomic number, symbol, or name.
-- Retrieve element properties using SQL queries.
-- Join related tables to combine element details, physical properties, and classification.
-- Display atomic mass, melting point, boiling point, and element type.
-- Handle missing input and elements that are not found in the database.
+- Search for an element by atomic number, chemical symbol, or element name.
+- Retrieve the element's atomic number, symbol, name, atomic mass, melting point, and boiling point.
+- Classify elements by type using a relational database.
+- Combine information from multiple tables using SQL joins.
+- Handle missing command-line arguments and elements that are not found.
+- Query PostgreSQL from a Bash script using `psql`.
 
-## Technologies
+## Technologies Used
 
-- **Bash** — command-line input and application logic.
-- **PostgreSQL** — relational database management.
-- **SQL** — queries, joins, constraints, and relational data organization.
-- **psql** — PostgreSQL command-line interface.
+- **Bash** — command-line scripting
+- **PostgreSQL** — relational database management
+- **SQL** — database queries, table definitions, and constraints
+- **psql** — PostgreSQL command-line client
 
-## Project Structure
+## Repository Structure
 
 ```text
 periodic-table/
@@ -30,29 +31,37 @@ periodic-table/
 
 | File | Description |
 |---|---|
-| `element.sh` | Accepts an element identifier, queries the database, and displays the result. |
-| `periodic_table.sql` | Database dump containing the schema, constraints, and data. |
-| `README.md` | Project documentation. |
+| `element.sh` | Accepts an element identifier and queries the database. |
+| `periodic_table.sql` | SQL dump containing the database schema and element data. |
+| `README.md` | Project documentation and setup instructions. |
 
-## Database Schema
+## Database Design
 
-The database uses three related tables:
+The database contains three related tables:
 
-- **`elements`** — stores atomic number, chemical symbol, and element name.
-- **`properties`** — stores atomic mass, melting point, boiling point, and a reference to the element type.
-- **`types`** — stores element classifications such as nonmetal, metal, and metalloid.
+- **`elements`** — stores each element's atomic number, symbol, and name.
+- **`properties`** — stores atomic mass, melting point, boiling point, and the element's type ID.
+- **`types`** — stores the classification of each element, such as metal, nonmetal, or metalloid.
 
-The schema uses primary keys, unique constraints, and foreign keys to maintain relationships between records.
+Primary keys, unique constraints, and foreign keys help maintain relationships and data integrity.
 
-The supplied database contains information for the first ten elements of the periodic table.
+The current database contains the first ten elements of the periodic table, from Hydrogen to Neon.
 
-## Prerequisites
+## How It Works
 
+1. The user provides an atomic number, symbol, or element name as a command-line argument.
+2. The Bash script executes a PostgreSQL query through `psql`.
+3. SQL joins retrieve the element's properties and classification.
+4. The script displays the matching element's information or an appropriate message if the input is missing or no match is found.
+
+## Setup and Usage
+
+### Prerequisites
+
+- Bash shell
 - PostgreSQL
-- `psql` command-line client
-- Bash-compatible shell
-
-## Setup
+- PostgreSQL command-line client (`psql`)
+- A configured PostgreSQL role with access to the `periodic_table` database
 
 ### 1. Clone the repository
 
@@ -61,86 +70,97 @@ git clone https://github.com/Adarsha-o-O/periodic-table.git
 cd periodic-table
 ```
 
-### 2. Set up PostgreSQL
+### 2. Restore the database
 
-The supplied `periodic_table.sql` dump recreates a database named `periodic_table` and assigns ownership to the `freecodecamp` role.
+The `periodic_table.sql` file is a database dump. Before restoring it, inspect the file: **it contains commands to drop and recreate the `periodic_table` database**, which may delete an existing database with that name.
 
-**Warning:** The dump contains `DROP DATABASE periodic_table;`. Review the file before running it because importing it can delete an existing database with that name.
-
-Restore the database in a suitable PostgreSQL environment with the necessary privileges. For example:
+To restore the dump using a PostgreSQL administrator role, run:
 
 ```bash
 psql -U postgres -d postgres -f periodic_table.sql
 ```
 
-The PostgreSQL role and ownership settings may need adjustment for your local installation.
+The role and permissions required to execute the dump may vary depending on your PostgreSQL setup.
 
 ### 3. Configure database access
 
-The script connects using the following settings:
+The script connects using the following database settings:
 
 ```bash
 psql --username=freecodecamp --dbname=periodic_table
 ```
 
-Make sure the `freecodecamp` role exists and has the required database permissions, or modify `element.sh` to match your local PostgreSQL configuration.
+Ensure that the PostgreSQL role `freecodecamp` exists and has the necessary permissions to connect to the database and read its tables. If your local configuration differs, update the connection settings in `element.sh`.
 
-### 4. Run the script
+### 4. Make the script executable
 
-On Linux or a Bash-compatible environment, make the script executable:
+On Linux or another compatible Bash environment, run:
 
 ```bash
 chmod +x element.sh
 ```
 
-Then search for an element.
+### 5. Search for an element
 
-**By atomic number:**
+Search by atomic number:
 
 ```bash
 ./element.sh 1
 ```
 
-**By symbol:**
+Search by symbol:
 
 ```bash
 ./element.sh He
 ```
 
-**By name:**
+Search by element name:
 
 ```bash
 ./element.sh Carbon
 ```
 
+The script displays the matching element's information. If no argument is supplied or the element cannot be found, it displays a corresponding message.
+
 ## Example Output
 
-For Hydrogen, the script produces output in this format:
+Illustrative output for Hydrogen:
 
 ```text
-The element with atomic number 1 is Hydrogen (H). It's a nonmetal, with a mass of 1.008 amu. Hydrogen has a melting point of -259.1 celsius and a boiling point of -252.9 celsius.
+The element with atomic number 1 is Hydrogen (H).
+It's a nonmetal, with a mass of 1.008 amu.
+Hydrogen's melting point is -259.1 celsius.
+Hydrogen's boiling point is -252.9 celsius.
 ```
 
-## What I Practiced
+Actual output depends on the script and the values stored in the database.
 
-This project provided practical experience with:
+## What I Learned
 
-- Designing and querying a relational database.
-- Connecting Bash scripts to PostgreSQL.
-- Retrieving data using SQL `SELECT` statements.
-- Joining multiple tables using `JOIN`.
-- Using primary keys, unique constraints, and foreign keys.
-- Passing command-line arguments to a shell script.
-- Handling missing input and unsuccessful database lookups.
+By completing this project, I gained practical experience with:
 
-## Current Scope
-
-This repository contains the database and command-line lookup implementation developed during the learning project. It currently includes data for ten chemical elements and does not represent a complete periodic table database.
+- Designing a relational database with multiple related tables.
+- Creating primary keys, unique constraints, and foreign keys.
+- Writing SQL queries using `SELECT`, `WHERE`, and `JOIN`.
+- Retrieving database records from a Bash script.
+- Handling command-line arguments.
+- Using PostgreSQL's `psql` command-line client.
+- Exporting a database to an SQL dump for project submission.
 
 ## Learning Context
 
-Created as part of the **freeCodeCamp Relational Database curriculum**.
+This project was completed as part of the **freeCodeCamp Relational Databases Certification**.
 
-- GitHub repository: [periodic-table](https://github.com/Adarsha-o-O/periodic-table)
-- Developer: [Adarsha-o-O](https://github.com/Adarsha-o-O)
+Challenge: [Build a Periodic Table Database](https://www.freecodecamp.org/learn/relational-databases/)
+
+## Future Improvements
+
+- Expand the database to include all chemical elements.
+- Use safer parameter handling to avoid inserting raw user input directly into SQL queries.
+- Improve database connection configuration.
+- Add automated tests for different search inputs and error cases.
+
+---
+
+**Author:** [Adarsha-o-O](https://github.com/Adarsha-o-O)
 
